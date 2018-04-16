@@ -41,8 +41,10 @@ function unique_id() {
 };
 
 app.get('/',function(req,res){
+    var data = {};
     data["Data"] = "Hello skripsi!";
-    res.send(js2xmlparser.parse("person", data));
+            res.json(data);
+
 });
 
 // GET ALL PRODUCTS
