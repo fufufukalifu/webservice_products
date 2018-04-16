@@ -23,8 +23,8 @@ app.use(bodyParser.json());
 
 
 http.listen(3100, '0.0.0.0',function(){
-    console.log("Connected & Listen to port 3100");
-    console.log(connection);
+    // console.log("Connected & Listen to port 3100");
+    // console.log(connection);
     app.use('/image', express.static(path.join(__dirname, 'image')));
 });
 
@@ -46,17 +46,68 @@ app.get('/',function(req,res){
 });
 
 // GET ALL PRODUCTS
-app.get('/get_products',function (req,res) {
+app.get('/get_products/:limit',function (req,res) {
+    var limit = req.params.limit;
     var data = {
     };
-    connection.query("SELECT * FROM products", function (err, rows, fields) {
+    connection.query("SELECT * FROM product limit "+limit, function (err, rows, fields) {
 
         if (rows.length !=0){
             data["products"] = rows;
-            res.send(js2xmlparser.parse("products", data));
+            res.json(data);
+
         } else{
             data["products"] = 'no-produtcs';
-            res.send(js2xmlparser.parse("products", data));
+            res.json(data);
+
+        }
+    })
+});
+
+// GET product discount
+// alamat dikunjungi
+// '/get_products_discount/free_sale/:limit'
+// '/get_products_discount/end_year/:limit'
+// '/get_products_discount/get_one/:limit'
+// '/get_products_discount/event/:limit'
+
+app.get('/get_products_discount/:discount/:limit',function (req,res) {
+    var limit = req.params.limit;
+    var event = req.params.discount;
+    str_q = "SELECT * FROM product where "+event+" = 1 limit "+limit;
+
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data["products"] = rows;
+            res.json(data);
+
+        } else{
+            data["products"] = 'no-produtcs';
+            res.json(data);
+
+        }
+    })
+});
+// # get single produk #
+app.get('/get_product_detail/:id',function (req,res) {
+    var id = req.params.id;
+    str_q = "SELECT * FROM product where id = "+id;
+
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data["products"] = rows;
+            res.json(data);
+
+        } else{
+            data["products"] = 'no-produtcs';
+            res.json(data);
+
         }
     })
 });
