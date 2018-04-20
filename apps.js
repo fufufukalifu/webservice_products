@@ -109,7 +109,47 @@ app.get('/get_product_detail/:id',function (req,res) {
         } else{
             data["products"] = 'no-produtcs';
             res.json(data);
+        }
+    })
+});
 
+
+// # get single produk #
+app.get('/search_product_by_name/:keyword',function (req,res) {
+    var keyword = req.params.keyword;
+    str_q = "SELECT * FROM product WHERE name LIKE '"+keyword+"%'";
+
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data["products"] = rows;
+            res.json(data);
+
+        } else{
+            data["products"] = 'no-produtcs';
+            res.json(data);
+        }
+    })
+});
+
+// # get product favorite #
+app.get('/get_products_favorite/',function (req,res) {
+    var keyword = req.params.keyword;
+    str_q = "SELECT * FROM product order by sold desc limit 4";
+
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data["products"] = rows;
+            res.json(data);
+
+        } else{
+            data["products"] = 'no-produtcs';
+            res.json(data);
         }
     })
 });
