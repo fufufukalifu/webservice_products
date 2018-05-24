@@ -1,3 +1,7 @@
+const rajaongkir = require('rajaongkir-node-js')
+// masukan api-key tipe akun
+const request = rajaongkir('38bbe5b097bf93c6a63656f53c136afa', 'starter')
+
 var express = require('express');
 var app = express();
 var path = require('path');
@@ -43,7 +47,7 @@ function unique_id() {
 app.get('/',function(req,res){
     var data = {};
     data["Data"] = "Hello skripsi!";
-            res.json(data);
+    res.json(data);
 
 });
 
@@ -99,7 +103,6 @@ app.get('/get_product_detail/:id',function (req,res) {
     str_q = "SELECT * FROM product where id = "+id;
 
     var data = {};
-    console.log(str_q);
     connection.query(str_q, function (err, rows, fields) {
 
         if (rows.length !=0){
@@ -153,3 +156,80 @@ app.get('/get_products_favorite/',function (req,res) {
         }
     })
 });
+
+
+
+// # get chart that never been checkouted #
+app.get('/get_charts/',function (req,res) {
+    var keyword = req.params.keyword;
+    str_q = "select * from chart c inner join product p on p.id = c.product_id where c.checkout = 0";
+
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data["products"] = rows;
+            res.json(data);
+
+        } else{
+            data["products"] = 'no-charts';
+            res.json(data);
+        }
+    })
+});
+
+// # get total chart that must be paid
+app.get('/get_total_chart/',function (req,res) {
+    var keyword = req.params.keyword;
+    str_q = "select sum(amount * price) total_charted from chart c inner join product p on p.id = c.product_id where c.checkout = 0";
+
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data["total_chart"] = rows;
+            res.json(data);
+
+        } else{
+            data["total_chart"] = 'no-charts';
+            res.json(data);
+        }
+    })
+});
+
+// 
+app.get('/get_provinces/',function (req,res) {
+ var Request = require("request");
+
+ var http = require("https");
+
+ var options = {
+  "method": "GET",
+  "hostname": "api.rajaongkir.com",
+  "port": null,
+  "path": "/starter/province",
+  "headers": {
+    "key": "38bbe5b097bf93c6a63656f53c136afa"
+}
+};
+var req = http.request(options, function (res) {
+  var chunks = [];
+
+  res.on("data", function (chunk) {
+    chunks.push(chunk);
+  });
+
+  res.on("end", function () {
+    var body = Buffer.concat(chunks);
+    console.log(body.toString());
+  });
+});
+
+req.end();
+res.json(1);
+console.log('ini');
+console.log(res);
+
+}); 
