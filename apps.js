@@ -199,6 +199,45 @@ app.get('/get_total_chart/',function (req,res) {
     })
 });
 
+// # get total chart that must be paid
+app.get('/get_bank_list/',function (req,res) {
+    var keyword = req.params.keyword;
+    str_q = "select * from bank";
+
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data = rows;
+            res.json(data);
+
+        } else{
+            data = 'no-charts';
+            res.json(data);
+        }
+    })
+});
+
+// # get single produk #
+app.get('/get_bank_detail/:id',function (req,res) {
+    var id = req.params.id;
+    str_q = "SELECT * FROM bank where id = "+id;
+
+    var data = {};
+    connection.query(str_q, function (err, rows, fields) {
+
+        if (rows.length !=0){
+            data = rows;
+            res.json(data);
+
+        } else{
+            data = 'no-bank';
+            res.json(data);
+        }
+    })
+});
+
 // 
 app.get('/get_provinces/',function (req,res) {
  var Request = require("request");
@@ -232,4 +271,4 @@ res.json(1);
 console.log('ini');
 console.log(res);
 
-}); 
+});     
