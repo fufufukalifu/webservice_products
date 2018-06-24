@@ -219,7 +219,7 @@ app.get('/get_bank_list/',function (req,res) {
     })
 });
 
-// # get single produk #
+// # get bank detail #
 app.get('/get_bank_detail/:id',function (req,res) {
     var id = req.params.id;
     str_q = "SELECT * FROM bank where id = "+id;
@@ -236,6 +236,49 @@ app.get('/get_bank_detail/:id',function (req,res) {
             res.json(data);
         }
     })
+});
+
+app.get('/insert_to_chart/:id/:number/',function (req,res) {
+    var id = req.params.id;
+    var number = req.params.number;
+    var data ={
+        "error":true,
+    };
+
+    var x = connection.query("UPDATE product SET stok = stok - ?, sold = sold + ? WHERE product.id = ?"
+        ,[number, number, id],function(err,rows,fields){
+            if(!!err){
+                data["error"] = true;
+            }else{
+                data["error"] = false;
+                data["message"] = "Chart berhasil disimpan";
+            }
+            res.json(data);
+        });
+
+    var x = connection.query("INSERT INTO chart(product_id,amount, checkout) VALUES (?,?,?) ",[id , number,0],function(err,rows,fields){});
+
+
+});
+
+app.get('/update_chart',function (req,res) {
+    var id = req.params.id;
+    var number = req.params.number;
+    var data ={
+        "error":true,
+    };
+
+    var x = connection.query("UPDATE chart SET checkout =  ? WHERE chart.checkout = ?"
+        ,[1, 0],function(err,rows,fields){
+            console.log(err);
+            if(!!err){
+                data["error"] = true;
+            }else{
+                data["error"] = false;
+                data["message"] = "Chart berhasil diupdate";
+            }
+            res.json(data);
+        });
 });
 
 // 
@@ -258,13 +301,17 @@ var req = http.request(options, function (res) {
 
   res.on("data", function (chunk) {
     chunks.push(chunk);
-  });
+});
 
   res.on("end", function () {
     var body = Buffer.concat(chunks);
     console.log(body.toString());
-  });
 });
+});
+
+
+
+
 
 req.end();
 res.json(1);
