@@ -173,7 +173,7 @@ app.get('/get_charts/',function (req,res) {
             res.json(data);
 
         } else{
-            data["products"] = 'no-charts';
+            data["products"] = [];
             res.json(data);
         }
     })
@@ -219,6 +219,39 @@ app.get('/get_bank_list/',function (req,res) {
     })
 });
 
+// # get total chart that must be paid
+app.get('/get_ship_by_value/:value',function (req,res) {
+    var value = req.params.value
+    str_q = "select * from shipping where value = "+value+"  order by id desc limit 1";
+    console.log(str_q);
+    var data = {};
+    console.log(str_q);
+    connection.query(str_q, function (err, rows, fields) {
+        if (rows.length !=0){
+            data = rows;
+            res.json(data);
+        } else{
+            data = 'no-charts';
+            res.json(data);
+        }
+    })
+});
+
+app.get('/get_ship_by_transaksi/:value',function (req,res) {
+    var value = req.params.value
+    str_q = "select * from shipping where no_transaksi = "+value+"  or no_resi = "+value;
+    var data = {};
+    connection.query(str_q, function (err, rows, fields) {
+        if (rows.length !=0){
+            data = rows;
+            res.json(data);
+        } else{
+            data = [];
+            res.json(data);
+        }
+    })
+});
+
 // # get bank detail #
 app.get('/get_bank_detail/:id',function (req,res) {
     var id = req.params.id;
@@ -258,6 +291,32 @@ app.get('/insert_to_chart/:id/:number/',function (req,res) {
 
     var x = connection.query("INSERT INTO chart(product_id,amount, checkout) VALUES (?,?,?) ",[id , number,0],function(err,rows,fields){});
 
+});
+
+app.get('/insert_to_ship/:value/:berat/:province/:city/:courier/:alamat/:resi/:transaksi',function (req,res) {
+    var value = req.params.value;
+    var berat = req.params.nberat;
+    var province = req.params.province
+    var city = req.params.city
+    var courier = req.params.courier
+    var alamat = req.params.alamat
+    var resi = req.params.resi
+    var transaksi = req.params.transaksi
+    
+    var data ={
+        "error":true,
+    };
+
+    var x = connection.query("INSERT INTO shipping (value, berat, alamat, province, city, courier, no_resi, no_transaksi) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        ,[value, berat, alamat, province, city, courier, resi, transaksi],function(err,rows,fields){
+            if(!!err){
+                data["error"] = true;
+            }else{
+                data["error"] = false;
+                data["message"] = "Chart berhasil disimpan";
+            }
+            res.json(data);
+        });
 
 });
 
