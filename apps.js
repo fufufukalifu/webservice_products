@@ -213,7 +213,7 @@ app.get('/get_bank_list/',function (req,res) {
             res.json(data);
 
         } else{
-            data = 'no-charts';
+            data = 'tidak ada bank';
             res.json(data);
         }
     })
@@ -237,10 +237,13 @@ app.get('/get_ship_by_value/:value',function (req,res) {
     })
 });
 
+// # get ship berdasarkan no transaksi atau resi
 app.get('/get_ship_by_transaksi/:value',function (req,res) {
     var value = req.params.value
-    str_q = "select * from shipping where no_transaksi = "+value+"  or no_resi = "+value;
+    str_q = "select * from shipping where no_transaksi = '"+value+"'  or no_resi = '"+value+"'";
+    console.log(str_q);
     var data = {};
+
     connection.query(str_q, function (err, rows, fields) {
         if (rows.length !=0){
             data = rows;
@@ -271,6 +274,7 @@ app.get('/get_bank_detail/:id',function (req,res) {
     })
 });
 
+// # insert into chart
 app.get('/insert_to_chart/:id/:number/',function (req,res) {
     var id = req.params.id;
     var number = req.params.number;
@@ -293,7 +297,9 @@ app.get('/insert_to_chart/:id/:number/',function (req,res) {
 
 });
 
-app.get('/insert_to_ship/:value/:berat/:province/:city/:courier/:alamat/:resi/:transaksi',function (req,res) {
+
+// # payment
+app.get('/payment/:value/:berat/:province/:city/:courier/:alamat/:resi/:transaksi',function (req,res) {
     var value = req.params.value;
     var berat = req.params.nberat;
     var province = req.params.province
@@ -313,13 +319,14 @@ app.get('/insert_to_ship/:value/:berat/:province/:city/:courier/:alamat/:resi/:t
                 data["error"] = true;
             }else{
                 data["error"] = false;
-                data["message"] = "Chart berhasil disimpan";
+                data["message"] = "Pembayaran Berhasil dilakukan";
             }
             res.json(data);
         });
 
 });
 
+// # update status chart. dari chart ke checkout
 app.get('/update_chart',function (req,res) {
     var id = req.params.id;
     var number = req.params.number;
@@ -340,7 +347,7 @@ app.get('/update_chart',function (req,res) {
         });
 });
 
-// 
+
 app.get('/get_provinces/',function (req,res) {
  var Request = require("request");
 
